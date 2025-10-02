@@ -23,6 +23,25 @@
   var translationEnabled = true;
   var firstTimeLoadTranslation = true;
   var activeLyricRequestUri = null;
+  var isCodeScrolling = 3;
+  var USER_SCROLL_PAUSE_MS = 3e3;
+  var PROGRAMMATIC_SCROLL_GRACE_MS = 600;
+  var lastUserScrollAt = 0;
+  var lastProgrammaticScrollAt = 0;
+  var ignoreProgrammaticScroll = false;
+  function markProgrammaticScroll(graceMs = PROGRAMMATIC_SCROLL_GRACE_MS) {
+    lastProgrammaticScrollAt = Date.now();
+    ignoreProgrammaticScroll = true;
+    setTimeout(() => {
+      ignoreProgrammaticScroll = false;
+    }, graceMs);
+  }
+  function setLastUserScrollAt(data) {
+    lastUserScrollAt = data;
+  }
+  function setIsCodeScrolling(active) {
+    isCodeScrolling = active;
+  }
   var getActiveLyricRequestUri = () => activeLyricRequestUri;
   var setActiveLyricRequestUri = (uri) => {
     activeLyricRequestUri = uri;
@@ -547,14 +566,14 @@
           const newActiveEl = document.getElementById(newActiveLineId);
           if (newActiveEl) {
             newActiveEl.classList.add("active");
-            if (isIdle) {
+            const now = Date.now();
+            const userPaused = now - lastUserScrollAt < USER_SCROLL_PAUSE_MS;
+            if (!userPaused) {
+              markProgrammaticScroll();
+              setIsCodeScrolling(2);
               newActiveEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else {
             }
-          }
-          if (newActiveEl && scrolledAndStopped == true) {
-            newActiveEl.scrollIntoView({ behavior: "smooth", block: "center" });
-            setScrolledAndStopped(false);
-            setIdle(true);
           }
           setCurrentHighlightedLine(newActiveLineId);
         } else if (!newActiveLineId && currentHighlightedLine) {
@@ -569,7 +588,11 @@
   function resetToCurrentHighlightedLine() {
     if (currentHighlightedLine) {
       const currentActiveEl = document.getElementById(currentHighlightedLine);
-      currentActiveEl == null ? void 0 : currentActiveEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (currentActiveEl) {
+        markProgrammaticScroll();
+        setIsCodeScrolling(2);
+        currentActiveEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     }
   }
 
@@ -935,16 +958,22 @@
       setIsDragging(false);
     });
     let scrollTimeout = null;
-    lyricsScrollContainer.onscroll = function() {
-      setScrolledAndStopped(false);
+    lyricsScrollContainer.addEventListener("scroll", () => {
+      const now = Date.now();
+      if (ignoreProgrammaticScroll || now - lastProgrammaticScrollAt < PROGRAMMATIC_SCROLL_GRACE_MS) {
+        return;
+      }
+      setLastUserScrollAt(now);
       setIdle(false);
+      setScrolledAndStopped(false);
       if (scrollTimeout) {
         clearTimeout(scrollTimeout);
       }
       scrollTimeout = setTimeout(() => {
+        setIdle(true);
         setScrolledAndStopped(true);
-      }, 3e3);
-    };
+      }, USER_SCROLL_PAUSE_MS);
+    });
     lyricsContainer.addEventListener("copy", (e) => e.stopPropagation());
     lyricsContainer.addEventListener("contextmenu", (e) => e.stopPropagation());
     lyricsContainer.addEventListener("keydown", (e) => {
@@ -1059,6 +1088,7 @@
               return;
             }
             handleTranslations();
+            Spicetify.showNotification(`Translations ${translateToggle.checked ? "Enabled" : "Disabled"}`);
             resetToCurrentHighlightedLine();
             Spicetify.LocalStorage.set("translation-enabled", translateToggle.checked.toString());
           });
@@ -1068,7 +1098,7 @@
   }
 
   // src/components/lyricsPage/index.tsx
-  function showLyricsPage() {
+  function showLyricsPage2() {
     if (lyricsPageActive) {
       return;
     }
@@ -1195,7 +1225,7 @@
       button.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        showLyricsPage();
+        showLyricsPage2();
       });
       button.addEventListener("mouseenter", () => {
         button.style.color = "var(--text-base, #ffffff)";
@@ -1234,7 +1264,7 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     transition: all 0.2s;
   `;
-    button.addEventListener("click", showLyricsPage);
+    button.addEventListener("click", showLyricsPage2);
     button.addEventListener("mouseenter", () => {
       button.style.transform = "scale(1.05)";
       button.style.boxShadow = "0 6px 16px rgba(0,0,0,0.5)";
@@ -1255,7 +1285,7 @@
         if (lyricsPageActive) {
           closeLyricsPage();
         } else {
-          showLyricsPage();
+          showLyricsPage2();
         }
       }
     });

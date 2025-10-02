@@ -18,10 +18,19 @@ import {
     setTranslationEnabled,
     translatedLyrics,
     setTranslatedLyrics,
+    isCodeScrolling,
+    setIsCodeScrolling,
+    currentHighlightedLine,
+    ignoreProgrammaticScroll,
+    lastProgrammaticScrollAt,
+    PROGRAMMATIC_SCROLL_GRACE_MS,
+    lastUserScrollAt,
+    USER_SCROLL_PAUSE_MS,
+    setLastUserScrollAt,
 } from '../../state/lyricsState';
 import { fetchAndDisplayLyrics, handleTranslations, resetToCurrentHighlightedLine } from '../../utils/lyricsFetcher';
 import { processFullLyrics } from '../../utils/translate';
-import { closeLyricsPage } from './index';
+import { closeLyricsPage, showLyricsPage } from './index';
 import { pauseRotation, resumeRotation } from './utils';
 
 export function attachEventHandlers(lyricsContainer: HTMLElement) {
@@ -59,20 +68,32 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
       setIsDragging(false);
     });
   
-    // Handle a scroll timer of 3 seconds
     let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
-  
-    lyricsScrollContainer.onscroll = function () {
-      setScrolledAndStopped(false);
+
+    // Handle a scroll timer of 3 seconds
+    lyricsScrollContainer.addEventListener('scroll', () => {
+      const now = Date.now();
+
+      // If we recently initiated a programmatic scroll, ignore this scroll event.
+      if (ignoreProgrammaticScroll || (now - lastProgrammaticScrollAt) < PROGRAMMATIC_SCROLL_GRACE_MS) {
+        return;
+      }
+
+      // It's a real user scroll
+      setLastUserScrollAt(now)
       setIdle(false);
-  
+      setScrolledAndStopped(false);
+
       if (scrollTimeout) {
         clearTimeout(scrollTimeout);
       }
+
+      // When the user stops scrolling for USER_SCROLL_PAUSE_MS, mark idle again.
       scrollTimeout = setTimeout(() => {
+        setIdle(true);
         setScrolledAndStopped(true);
-      }, 3000);
-    };
+      },USER_SCROLL_PAUSE_MS);
+    });
   
     // Attach global events (copy, context menu, keyboard) to the main container
     lyricsContainer.addEventListener('copy', (e) => e.stopPropagation());
@@ -218,6 +239,7 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
               return;
             }
             handleTranslations();
+            Spicetify.showNotification(`Translations ${translateToggle.checked ? 'Enabled' : 'Disabled'}`);
             resetToCurrentHighlightedLine();
             Spicetify.LocalStorage.set('translation-enabled', translateToggle.checked.toString());
             //Spicetify.showNotification(`Translations ${translateToggle.checked ? 'Enabled' : 'Disabled'}`);

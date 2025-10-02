@@ -18,6 +18,10 @@ import {
   firstTimeLoadTranslation,
   setTfirstTimeLoadTranslation,
   setActiveLyricRequestUri,
+  setIsCodeScrolling,
+  lastUserScrollAt,
+  USER_SCROLL_PAUSE_MS,
+  markProgrammaticScroll,
 } from '../state/lyricsState';
 import { getNELyrics, searchId } from './netEasyFetcher';
 import { processFullLyrics } from './translate';
@@ -429,14 +433,19 @@ export function displaySyncedLyrics(data: Song, trackUri: string) {
         const newActiveEl = document.getElementById(newActiveLineId);
         if (newActiveEl){
           newActiveEl.classList.add('active');
-          if(isIdle){
+
+          // If the user has scrolled recently, pause auto-recenter.
+          const now = Date.now();
+          const userPaused = (now - lastUserScrollAt) < USER_SCROLL_PAUSE_MS;
+
+          if (!userPaused) {
+            // mark that this is a programmatic scroll so the onscroll handler ignores it
+            markProgrammaticScroll();
+            setIsCodeScrolling(2);
             newActiveEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            // skip recenter because user recently scrolled
           }
-        }
-        if (newActiveEl && scrolledAndStopped == true) {
-          newActiveEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setScrolledAndStopped(false);
-          setIdle(true);
         }
         setCurrentHighlightedLine(newActiveLineId);
       } else if (!newActiveLineId && currentHighlightedLine) {
@@ -451,6 +460,10 @@ export function displaySyncedLyrics(data: Song, trackUri: string) {
 export function resetToCurrentHighlightedLine(){
   if (currentHighlightedLine) {
     const currentActiveEl = document.getElementById(currentHighlightedLine);
-    currentActiveEl?.scrollIntoView({ behavior:'smooth', block: 'center'});
+    if (currentActiveEl) {
+      markProgrammaticScroll();
+      setIsCodeScrolling(2);
+      currentActiveEl.scrollIntoView({ behavior:'smooth', block: 'center'});
+    }
   }
 }

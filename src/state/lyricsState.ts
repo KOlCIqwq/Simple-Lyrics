@@ -24,7 +24,31 @@ export let preferredLanguage: string = 'any';
 export let translatedLyrics: { time: number; line: string }[] = [];
 export let translationEnabled: boolean = true;
 export let firstTimeLoadTranslation: boolean = true;
-let activeLyricRequestUri: string | null = null;
+export let activeLyricRequestUri: string | null = null;
+export let isCodeScrolling = 3;
+
+export const USER_SCROLL_PAUSE_MS = 3000;
+export const PROGRAMMATIC_SCROLL_GRACE_MS = 600;
+
+export let lastUserScrollAt = 0;
+export let lastProgrammaticScrollAt = 0;
+export let ignoreProgrammaticScroll = false;
+
+export function markProgrammaticScroll(graceMs = PROGRAMMATIC_SCROLL_GRACE_MS) {
+  lastProgrammaticScrollAt = Date.now();
+  ignoreProgrammaticScroll = true;
+  setTimeout(() => {
+    ignoreProgrammaticScroll = false;
+  }, graceMs);
+}
+
+export function setLastUserScrollAt(data:number){
+  lastUserScrollAt = data;
+}
+
+export function setIsCodeScrolling(active:number){
+  isCodeScrolling = active;
+}
 
 export const getActiveLyricRequestUri = () => activeLyricRequestUri;
 export const setActiveLyricRequestUri = (uri: string | null) => {
