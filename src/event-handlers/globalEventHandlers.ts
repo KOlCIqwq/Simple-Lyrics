@@ -70,6 +70,17 @@ export function setupGlobalEventHandlers() {
 
         updateLyricsBackground(); // Update background on song change
         resetLyricsViewScroll(); // Reset the page to top
+
+        const track = document.getElementById('album-art-track') as HTMLElement;
+        if (track) {
+            // Instantly reset position without animation
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0)';
+            // A tiny timeout can help ensure the style is applied before re-enabling transition later
+            setTimeout(() => {
+                track.style.transition = 'transform 0.3s ease-out';
+            }, 50);
+        }
       });
 
       window.Spicetify.Player.addEventListener('onplaypause', () => {

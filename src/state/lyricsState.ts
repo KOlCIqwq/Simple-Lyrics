@@ -28,7 +28,7 @@ export let activeLyricRequestUri: string | null = null;
 export let isCodeScrolling = 3;
 
 export const USER_SCROLL_PAUSE_MS = 3000;
-export const PROGRAMMATIC_SCROLL_GRACE_MS = 600;
+export const PROGRAMMATIC_SCROLL_GRACE_MS = 500;
 
 export let lastUserScrollAt = 0;
 export let lastProgrammaticScrollAt = 0;

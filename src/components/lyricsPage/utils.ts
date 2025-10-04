@@ -92,3 +92,81 @@ export function resetLyricsViewScroll() {
 export function test(message:string){
     Spicetify.showNotification(message);
 }
+
+export function setupAlbumSwiper() {
+    const swiperContainer = document.getElementById('album-art-swiper-container');
+    const track = document.getElementById('album-art-track') as HTMLElement;
+    const nextAlbumImg = document.getElementById('next-album-image') as HTMLImageElement;
+
+    if (!swiperContainer || !track || !nextAlbumImg) return;
+
+    let isSwiping = false;
+    let startX = 0;
+    let currentTranslate = 0;
+    const SWIPE_THRESHOLD = swiperContainer.offsetWidth / 2; // Swipe 50% to trigger skip
+
+    const getNextTrackImageUrl = (): string | null => {
+        const nextTracks = Spicetify.Queue.nextTracks;
+        if (nextTracks && nextTracks.length > 0) {
+            return nextTracks[0].metadata?.image_url || null;
+        }
+        return null;
+    };
+
+    const onSwipeStart = (e: MouseEvent) => {
+        isSwiping = true;
+        startX = e.clientX;
+        track.style.transition = 'none';
+        swiperContainer.style.cursor = 'grabbing';
+
+        // Preload the next album image
+        const nextImageUrl = getNextTrackImageUrl();
+        if (nextImageUrl) {
+            nextAlbumImg.src = nextImageUrl;
+            nextAlbumImg.style.display = 'block';
+        } else {
+            nextAlbumImg.style.display = 'none'; // No next song in queue
+        }
+        e.preventDefault();
+    };
+
+    const onSwipeMove = (e: MouseEvent) => {
+        if (!isSwiping) return;
+        const currentX = e.clientX;
+        currentTranslate = currentX - startX;
+        
+        // Left Swipe
+        if (currentTranslate < 0) {
+             track.style.transform = `translateX(${currentTranslate}px)`;
+             // Here we can let the nextAlbumImage appear
+        }
+        // Right Swipe
+        if (currentTranslate > 0) {
+             track.style.transform = `translateX(${currentTranslate}px)`;
+        }
+    };
+
+    const onSwipeEnd = () => {
+        if (!isSwiping) return;
+        isSwiping = false;
+
+        track.style.transition = 'transform 0.3s ease-out'; // Re-enable for smooth snapping
+        swiperContainer.style.cursor = 'grab';
+
+        // Check if swipe crossed the threshold (only for swiping left)
+        if (currentTranslate < -SWIPE_THRESHOLD && nextAlbumImg.src) {
+            track.style.transform = `translateX(-50%)`;
+            Spicetify.Player.next();
+        } else {
+            // Snap back to original position
+            track.style.transform = 'translateX(0)';
+        }
+        currentTranslate = 0; // Reset for next swipe
+    };
+
+    swiperContainer.addEventListener('mousedown', onSwipeStart);
+    // Add listeners to the document to catch mouse movements/releases outside the element
+    document.addEventListener('mousemove', onSwipeMove);
+    document.addEventListener('mouseup', onSwipeEnd);
+    document.addEventListener('mouseleave', onSwipeEnd);
+}

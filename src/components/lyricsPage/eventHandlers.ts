@@ -31,7 +31,7 @@ import {
 import { fetchAndDisplayLyrics, handleTranslations, resetToCurrentHighlightedLine } from '../../utils/lyricsFetcher';
 import { processFullLyrics } from '../../utils/translate';
 import { closeLyricsPage, showLyricsPage } from './index';
-import { pauseRotation, resumeRotation } from './utils';
+import { pauseRotation, resumeRotation, setupAlbumSwiper } from './utils';
 
 export function attachEventHandlers(lyricsContainer: HTMLElement) {
     // Attach selection and drag events to the scrollable lyrics container
@@ -247,4 +247,6 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
         }
       }
     }
+  
+    setupAlbumSwiper();
 }

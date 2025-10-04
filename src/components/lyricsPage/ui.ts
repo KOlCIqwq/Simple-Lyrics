@@ -60,11 +60,33 @@ export function createLyricsPageUI(mainView: Element) {
           </svg>
         </button>
   
-        <!-- Album Image -->
-        <img id="lyrics-album-image" src="" alt="Album Art" style="
-          width: 250px; height: 250px; border-radius: 50%; object-fit: cover;
-          flex-shrink: 0; margin-bottom: 20px;
-        "/>
+        <!-- Album Swiper -->
+        <div id="album-art-swiper-container" style="
+            width: 250px; height: 250px;
+            flex-shrink: 0; margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+        ">
+            <div id="album-art-track" style="
+                position: absolute;
+                top: 0; left: 0;
+                width: 200%; /* To hold two images */
+                height: 100%;
+                display: flex;
+            ">
+                <img id="lyrics-album-image" src="" alt="Current Album Art" style="
+                    width: 50%; height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                "/>
+                <img id="next-album-image" src="" alt="Next Album Art" style="
+                    width: 50%; height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                "/>
+            </div>
+        </div>
   
         <!-- Track Info Header -->
         <div id="track-info-header" style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 10px;"></div>
