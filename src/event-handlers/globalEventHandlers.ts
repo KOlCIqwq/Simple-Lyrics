@@ -75,7 +75,7 @@ export function setupGlobalEventHandlers() {
         if (track) {
             // Instantly reset position without animation
             track.style.transition = 'none';
-            track.style.transform = 'translateX(0)';
+            track.style.transform = 'translateX(-33.3333%)'; 
             // A tiny timeout can help ensure the style is applied before re-enabling transition later
             setTimeout(() => {
                 track.style.transition = 'transform 0.3s ease-out';

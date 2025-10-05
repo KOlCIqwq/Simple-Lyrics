@@ -5,6 +5,8 @@ import {
     setRotationDegree,
 } from '../../state/lyricsState';
 
+import { getPrevTrackImageUrl, getNextTrackImageUrl } from '../../utils/albumImageFetcher';
+
 export function handleAlbumRotation() {
     const albumImg = document.getElementById("lyrics-album-image");
     if (!albumImg) return;
@@ -97,6 +99,7 @@ export function setupAlbumSwiper() {
     const swiperContainer = document.getElementById('album-art-swiper-container');
     const track = document.getElementById('album-art-track') as HTMLElement;
     const nextAlbumImg = document.getElementById('next-album-image') as HTMLImageElement;
+    const prevAlbumImg = document.getElementById('prev-album-image') as HTMLImageElement;
 
     if (!swiperContainer || !track || !nextAlbumImg) return;
 
@@ -105,13 +108,7 @@ export function setupAlbumSwiper() {
     let currentTranslate = 0;
     const SWIPE_THRESHOLD = swiperContainer.offsetWidth / 2; // Swipe 50% to trigger skip
 
-    const getNextTrackImageUrl = (): string | null => {
-        const nextTracks = Spicetify.Queue.nextTracks;
-        if (nextTracks && nextTracks.length > 0) {
-            return nextTracks[0].metadata?.image_url || null;
-        }
-        return null;
-    };
+    const CENTER_OFFSET_PERCENT = -33.3333;
 
     const onSwipeStart = (e: MouseEvent) => {
         isSwiping = true;
@@ -121,12 +118,10 @@ export function setupAlbumSwiper() {
 
         // Preload the next album image
         const nextImageUrl = getNextTrackImageUrl();
-        if (nextImageUrl) {
-            nextAlbumImg.src = nextImageUrl;
-            nextAlbumImg.style.display = 'block';
-        } else {
-            nextAlbumImg.style.display = 'none'; // No next song in queue
-        }
+        const prevImageUrl = getPrevTrackImageUrl();
+        nextAlbumImg.src = nextImageUrl || '';
+        prevAlbumImg.src = prevImageUrl || '';
+
         e.preventDefault();
     };
 
@@ -135,15 +130,7 @@ export function setupAlbumSwiper() {
         const currentX = e.clientX;
         currentTranslate = currentX - startX;
         
-        // Left Swipe
-        if (currentTranslate < 0) {
-             track.style.transform = `translateX(${currentTranslate}px)`;
-             // Here we can let the nextAlbumImage appear
-        }
-        // Right Swipe
-        if (currentTranslate > 0) {
-             track.style.transform = `translateX(${currentTranslate}px)`;
-        }
+        track.style.transform = `translateX(calc(${CENTER_OFFSET_PERCENT}% + ${currentTranslate}px))`;
     };
 
     const onSwipeEnd = () => {
@@ -155,11 +142,16 @@ export function setupAlbumSwiper() {
 
         // Check if swipe crossed the threshold (only for swiping left)
         if (currentTranslate < -SWIPE_THRESHOLD && nextAlbumImg.src) {
-            track.style.transform = `translateX(-50%)`;
+            track.style.transform = `translateX(-66.6666%)`;
             Spicetify.Player.next();
-        } else {
+        } 
+        else if (currentTranslate > SWIPE_THRESHOLD && prevAlbumImg.src){
+          track.style.transform = `translateX(0%)`;
+          Spicetify.Player.back();
+        }
+        else {
             // Snap back to original position
-            track.style.transform = 'translateX(0)';
+            track.style.transform = `translateX(${CENTER_OFFSET_PERCENT}%)`;
         }
         currentTranslate = 0; // Reset for next swipe
     };

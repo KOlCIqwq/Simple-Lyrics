@@ -24,3 +24,23 @@ export function updateAlbumImage() {
   }
   albumImage.style.transform = `rotate(${rotationDeg})`; */
 }
+
+export const getNextTrackImageUrl = (): string | null => {
+  const nextTracks = Spicetify.Queue.nextTracks;
+  if (nextTracks && nextTracks.length > 0) {
+      const nextTrackWrapper = nextTracks[0];
+      const actualTrackData = nextTrackWrapper.contextTrack;
+      return actualTrackData?.metadata.image_url || null;
+  }
+  return null;
+};
+
+export const getPrevTrackImageUrl = (): string | null => {
+  const prevTracks = Spicetify.Queue.prevTracks;
+  if (prevTracks && prevTracks.length > 0) {
+      const prevTrackWrapper = prevTracks[prevTracks.length - 1];
+      const actualTrackData = prevTrackWrapper.contextTrack;
+      return actualTrackData.metadata?.image_url || null;
+  }
+  return null;
+};

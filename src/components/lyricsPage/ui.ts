@@ -67,24 +67,52 @@ export function createLyricsPageUI(mainView: Element) {
             position: relative;
             overflow: hidden;
             cursor: grab;
+            border-radius: 50%; 
         ">
-            <div id="album-art-track" style="
-                position: absolute;
-                top: 0; left: 0;
-                width: 200%; /* To hold two images */
-                height: 100%;
-                display: flex;
-            ">
-                <img id="lyrics-album-image" src="" alt="Current Album Art" style="
-                    width: 50%; height: 100%;
-                    object-fit: cover;
-                    border-radius: 50%;
-                "/>
-                <img id="next-album-image" src="" alt="Next Album Art" style="
-                    width: 50%; height: 100%;
-                    object-fit: cover;
-                    border-radius: 50%;
-                "/>
+              <div id="album-art-track" style="
+                      position: absolute;
+                      top: 0; left: 0;
+                      width: 300%; /* hold 3 images */
+                      height: 100%;
+                      display: flex;
+                      transform: translateX(-33.3333%); /* start with middle image */
+                  ">
+                      <div class="swiper-slide" style="
+                  width: 33.3333%;
+                  height: 100%;
+                  padding: 0 10px; /* Creates 20px of space between images */
+                  box-sizing: border-box; /* Ensures padding is included in the width */
+              ">
+                  <img id="prev-album-image" src="" alt="Previous Album Art" style="
+                      width: 100%; height: 100%;
+                      object-fit: cover;
+                      border-radius: 50%;
+                  "/>
+              </div>
+              <div class="swiper-slide" style="
+                  width: 33.3333%;
+                  height: 100%;
+                  padding: 0 10px;
+                  box-sizing: border-box;
+              ">
+                  <img id="lyrics-album-image" src="" alt="Current Album Art" style="
+                      width: 100%; height: 100%;
+                      object-fit: cover;
+                      border-radius: 50%;
+                  "/>
+              </div>
+              <div class="swiper-slide" style="
+                  width: 33.3333%;
+                  height: 100%;
+                  padding: 0 10px;
+                  box-sizing: border-box;
+              ">
+                  <img id="next-album-image" src="" alt="Next Album Art" style="
+                      width: 100%; height: 100%;
+                      object-fit: cover;
+                      border-radius: 50%;
+                  "/>
+              </div>
             </div>
         </div>
   
