@@ -11,6 +11,7 @@ Spotify sometimes fails to fetch them, even when Musixmatch has them, so I built
 - Autofocus
 - Spinning record uweuwuw
 - Translation
+- Swipe to switch songs
 
 ## Use it
 Use it with [Spicetify](https://github.com/spicetify/spicetify-cli)
