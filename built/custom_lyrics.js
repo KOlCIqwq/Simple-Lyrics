@@ -25,7 +25,7 @@
   var activeLyricRequestUri = null;
   var isCodeScrolling = 3;
   var USER_SCROLL_PAUSE_MS = 3e3;
-  var PROGRAMMATIC_SCROLL_GRACE_MS = 600;
+  var PROGRAMMATIC_SCROLL_GRACE_MS = 500;
   var lastUserScrollAt = 0;
   var lastProgrammaticScrollAt = 0;
   var ignoreProgrammaticScroll = false;
@@ -611,6 +611,25 @@
       albumImage.src = imageUrl;
     }
   }
+  var getNextTrackImageUrl = () => {
+    const nextTracks = Spicetify.Queue.nextTracks;
+    if (nextTracks && nextTracks.length > 0) {
+      const nextTrackWrapper = nextTracks[0];
+      const actualTrackData = nextTrackWrapper.contextTrack;
+      return (actualTrackData == null ? void 0 : actualTrackData.metadata.image_url) || null;
+    }
+    return null;
+  };
+  var getPrevTrackImageUrl = () => {
+    var _a;
+    const prevTracks = Spicetify.Queue.prevTracks;
+    if (prevTracks && prevTracks.length > 0) {
+      const prevTrackWrapper = prevTracks[prevTracks.length - 1];
+      const actualTrackData = prevTrackWrapper.contextTrack;
+      return ((_a = actualTrackData.metadata) == null ? void 0 : _a.image_url) || null;
+    }
+    return null;
+  };
 
   // src/components/lyricsPage/ui.ts
   function createLyricsPageUI(mainView) {
@@ -670,11 +689,65 @@
           </svg>
         </button>
   
-        <!-- Album Image -->
-        <img id="lyrics-album-image" src="" alt="Album Art" style="
-          width: 250px; height: 250px; border-radius: 50%; object-fit: cover;
-          flex-shrink: 0; margin-bottom: 20px;
-        "/>
+        <!-- Album Swiper -->
+        <div id="album-art-swiper-container" style="
+            width: 250px; height: 250px;
+            flex-shrink: 0; margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            cursor: grab;
+            border-radius: 50%; 
+        ">
+            <div id="album-art-track" style="
+                position: absolute;
+                top: 0; left: 0;
+                width: 300%; /* hold 3 images */
+                height: 100%;
+                display: flex;
+                transform: translateX(-33.3333%); /* start with middle image */
+            ">
+                <div class="swiper-slide" style="
+            width: 33.3333%;
+            height: 100%;
+            padding: 0 10px; /* Creates 20px of space between images */
+            box-sizing: border-box; /* Ensures padding is included in the width */
+        ">
+            <img id="prev-album-image" src="" alt="Previous Album Art" style="
+                width: 100%; height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            "/>
+        </div>
+
+        <!-- Slide 2: Current Track -->
+        <div class="swiper-slide" style="
+            width: 33.3333%;
+            height: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        ">
+            <img id="lyrics-album-image" src="" alt="Current Album Art" style="
+                width: 100%; height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            "/>
+        </div>
+
+        <!-- Slide 3: Next Track -->
+        <div class="swiper-slide" style="
+            width: 33.3333%;
+            height: 100%;
+            padding: 0 10px;
+            box-sizing: border-box;
+        ">
+            <img id="next-album-image" src="" alt="Next Album Art" style="
+                width: 100%; height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+            "/>
+        </div>
+            </div>
+        </div>
   
         <!-- Track Info Header -->
         <div id="track-info-header" style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 10px;"></div>
@@ -924,6 +997,58 @@
       lyricsScrollContainer.scrollTop = 0;
     }
   }
+  function setupAlbumSwiper() {
+    const swiperContainer = document.getElementById("album-art-swiper-container");
+    const track = document.getElementById("album-art-track");
+    const nextAlbumImg = document.getElementById("next-album-image");
+    const prevAlbumImg = document.getElementById("prev-album-image");
+    if (!swiperContainer || !track || !nextAlbumImg)
+      return;
+    let isSwiping = false;
+    let startX2 = 0;
+    let currentTranslate = 0;
+    const SWIPE_THRESHOLD = swiperContainer.offsetWidth / 2;
+    const CENTER_OFFSET_PERCENT = -33.3333;
+    const onSwipeStart = (e) => {
+      isSwiping = true;
+      startX2 = e.clientX;
+      track.style.transition = "none";
+      swiperContainer.style.cursor = "grabbing";
+      const nextImageUrl = getNextTrackImageUrl();
+      const prevImageUrl = getPrevTrackImageUrl();
+      nextAlbumImg.src = nextImageUrl || "";
+      prevAlbumImg.src = prevImageUrl || "";
+      e.preventDefault();
+    };
+    const onSwipeMove = (e) => {
+      if (!isSwiping)
+        return;
+      const currentX = e.clientX;
+      currentTranslate = currentX - startX2;
+      track.style.transform = `translateX(calc(${CENTER_OFFSET_PERCENT}% + ${currentTranslate}px))`;
+    };
+    const onSwipeEnd = () => {
+      if (!isSwiping)
+        return;
+      isSwiping = false;
+      track.style.transition = "transform 0.3s ease-out";
+      swiperContainer.style.cursor = "grab";
+      if (currentTranslate < -SWIPE_THRESHOLD && nextAlbumImg.src) {
+        track.style.transform = `translateX(-66.6666%)`;
+        Spicetify.Player.next();
+      } else if (currentTranslate > SWIPE_THRESHOLD && prevAlbumImg.src) {
+        track.style.transform = `translateX(0%)`;
+        Spicetify.Player.back();
+      } else {
+        track.style.transform = `translateX(${CENTER_OFFSET_PERCENT}%)`;
+      }
+      currentTranslate = 0;
+    };
+    swiperContainer.addEventListener("mousedown", onSwipeStart);
+    document.addEventListener("mousemove", onSwipeMove);
+    document.addEventListener("mouseup", onSwipeEnd);
+    document.addEventListener("mouseleave", onSwipeEnd);
+  }
 
   // src/components/lyricsPage/eventHandlers.ts
   function attachEventHandlers(lyricsContainer) {
@@ -1095,6 +1220,7 @@
         }
       }
     }
+    setupAlbumSwiper();
   }
 
   // src/components/lyricsPage/index.tsx
@@ -1321,6 +1447,14 @@
           updateAlbumImage();
           updateLyricsBackground();
           resetLyricsViewScroll();
+          const track = document.getElementById("album-art-track");
+          if (track) {
+            track.style.transition = "none";
+            track.style.transform = "translateX(-33.3333%)";
+            setTimeout(() => {
+              track.style.transition = "transform 0.3s ease-out";
+            }, 50);
+          }
         });
         window.Spicetify.Player.addEventListener("onplaypause", () => {
           handleAlbumRotation();
