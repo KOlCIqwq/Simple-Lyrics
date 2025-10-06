@@ -694,58 +694,107 @@
             width: 250px; height: 250px;
             flex-shrink: 0; margin-bottom: 20px;
             position: relative;
+            border-radius: 50%; 
             overflow: hidden;
             cursor: grab;
-            border-radius: 50%; 
         ">
             <div id="album-art-track" style="
                 position: absolute;
                 top: 0; left: 0;
-                width: 300%; /* hold 3 images */
+                width: 300%;
                 height: 100%;
                 display: flex;
-                transform: translateX(-33.3333%); /* start with middle image */
+                transform: translateX(-33.3333%); 
             ">
                 <div class="swiper-slide" style="
-            width: 33.3333%;
-            height: 100%;
-            padding: 0 10px; /* Creates 20px of space between images */
-            box-sizing: border-box; /* Ensures padding is included in the width */
-        ">
-            <img id="prev-album-image" src="" alt="Previous Album Art" style="
-                width: 100%; height: 100%;
-                object-fit: cover;
-                border-radius: 50%;
-            "/>
-        </div>
+                    width: 33.3333%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div class="vinyl-wrapper" style="
+                        width: calc(100% - 20px); 
+                        height: calc(100% - 20px);
+                        position: relative;
+                    ">
+                        <img id="prev-album-image" src="" alt="Previous Album Art" style="
+                            width: 100%; height: 100%;
+                            object-fit: cover;
+                            border-radius: 50%;
+                        "/>
+                        <div class="vinyl-overlay" style="
+                            position: absolute;
+                            top: 0; bottom: 0; left: 0; right: 0; /* Covers the square wrapper perfectly */
+                            border-radius: 50%;
+                            pointer-events: none;
+                        ">
+                            <div class="vinyl-groove" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.5);"></div>
+                            <div class="vinyl-groove" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 65%; height: 65%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6);"></div>
+                            <div class="vinyl-hole" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 25px; height: 25px; background: rgba(255,255,255,0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"></div>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Slide 2: Current Track -->
-        <div class="swiper-slide" style="
-            width: 33.3333%;
-            height: 100%;
-            padding: 0 10px;
-            box-sizing: border-box;
-        ">
-            <img id="lyrics-album-image" src="" alt="Current Album Art" style="
-                width: 100%; height: 100%;
-                object-fit: cover;
-                border-radius: 50%;
-            "/>
-        </div>
+                <div class="swiper-slide" style="
+                    width: 33.3333%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div class="vinyl-wrapper" style="
+                        width: calc(100% - 20px);
+                        height: calc(100% - 20px);
+                        position: relative;
+                    ">
+                        <img id="lyrics-album-image" src="" alt="Current Album Art" style="
+                            width: 100%; height: 100%;
+                            object-fit: cover;
+                            border-radius: 50%;
+                        "/>
+                        <div class="vinyl-overlay" style="
+                            position: absolute;
+                            top: 0; bottom: 0; left: 0; right: 0;
+                            border-radius: 50%;
+                            pointer-events: none;
+                        ">
+                            <div class="vinyl-groove" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.5);"></div>
+                            <div class="vinyl-groove" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 65%; height: 65%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6);"></div>
+                            <div class="vinyl-hole" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 25px; height: 25px; background: rgba(255,255,255,0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"></div>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Slide 3: Next Track -->
-        <div class="swiper-slide" style="
-            width: 33.3333%;
-            height: 100%;
-            padding: 0 10px;
-            box-sizing: border-box;
-        ">
-            <img id="next-album-image" src="" alt="Next Album Art" style="
-                width: 100%; height: 100%;
-                object-fit: cover;
-                border-radius: 50%;
-            "/>
-        </div>
+                <div class="swiper-slide" style="
+                    width: 33.3333%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <div class="vinyl-wrapper" style="
+                        width: calc(100% - 20px);
+                        height: calc(100% - 20px);
+                        position: relative;
+                    ">
+                        <img id="next-album-image" src="" alt="Next Album Art" style="
+                            width: 100%; height: 100%;
+                            object-fit: cover;
+                            border-radius: 50%;
+                        "/>
+                        <div class="vinyl-overlay" style="
+                            position: absolute;
+                            top: 0; bottom: 0; left: 0; right: 0;
+                            border-radius: 50%;
+                            pointer-events: none;
+                        ">
+                            <div class="vinyl-groove" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.5);"></div>
+                            <div class="vinyl-groove" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 65%; height: 65%; border-radius: 50%; border: 1px solid rgba(255,255,255,0.6);"></div>
+                            <div class="vinyl-hole" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 25px; height: 25px; background: rgba(255,255,255,0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
   
@@ -774,16 +823,15 @@
             display: flex; align-items: center; justify-content: center;
             transition: background-color 0.2s; flex-shrink: 0;
           ">
-          <!-- https://fontawesomeicons.com/svg/icons/gear -->
             <svg fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16"> 
               <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/> 
               <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 
               0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 
               0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 
-              0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 
+              0 1 .52-1.255l.319-.094c1.79-.527-1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 
               0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 
               1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 
-              1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 
+              1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428-.835-1.674 0l-.094-.319a1.873 1.873 0 0 
               0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 
               1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/> 
             </svg> 
