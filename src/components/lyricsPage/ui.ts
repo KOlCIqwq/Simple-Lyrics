@@ -121,15 +121,6 @@ export function createLyricsPageUI(mainView: Element) {
                             object-fit: cover;
                             border-radius: 50%;
                         "/>
-                        <div class="hover-like" style="
-                        background:rgba(68, 68, 68, 1)
-                        position: absolute;
-                        top: 0; bottom: 0; left: 0; right: 0;
-                        border-radius: 50%;
-                        pointer-events: none;
-                        ">
-                          
-                        </div>
                         <div class="vinyl-overlay" style="
                             position: absolute;
                             top: 0; bottom: 0; left: 0; right: 0;
@@ -212,6 +203,14 @@ export function createLyricsPageUI(mainView: Element) {
               0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 
               1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/> 
             </svg> 
+          </button>
+
+          <button id="lyrics-like-button" title="Like" style="
+            background:transparent; border: none; color: var(--text-base, #ffffff);
+            cursor: pointer; padding: 6px; border-radius: 50%; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s; flex-shrink: 0;
+          ">  
           </button>
         </div>
   

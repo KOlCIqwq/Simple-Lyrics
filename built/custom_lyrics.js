@@ -24,11 +24,15 @@
   var firstTimeLoadTranslation = true;
   var activeLyricRequestUri = null;
   var isCodeScrolling = 3;
+  var isThisSongLiked = Spicetify.Player.getHeart();
   var USER_SCROLL_PAUSE_MS = 3e3;
   var PROGRAMMATIC_SCROLL_GRACE_MS = 500;
   var lastUserScrollAt = 0;
   var lastProgrammaticScrollAt = 0;
   var ignoreProgrammaticScroll = false;
+  function setIsThisSongLiked(status) {
+    isThisSongLiked = status;
+  }
   function markProgrammaticScroll(graceMs = PROGRAMMATIC_SCROLL_GRACE_MS) {
     lastProgrammaticScrollAt = Date.now();
     ignoreProgrammaticScroll = true;
@@ -753,15 +757,6 @@
                             object-fit: cover;
                             border-radius: 50%;
                         "/>
-                        <div class="hover-like" style="
-                        background:rgba(68, 68, 68, 1)
-                        position: absolute;
-                        top: 0; bottom: 0; left: 0; right: 0;
-                        border-radius: 50%;
-                        pointer-events: none;
-                        ">
-                          
-                        </div>
                         <div class="vinyl-overlay" style="
                             position: absolute;
                             top: 0; bottom: 0; left: 0; right: 0;
@@ -844,6 +839,14 @@
               0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 
               1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/> 
             </svg> 
+          </button>
+
+          <button id="lyrics-like-button" title="Like" style="
+            background:transparent; border: none; color: var(--text-base, #ffffff);
+            cursor: pointer; padding: 6px; border-radius: 50%; width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.2s; flex-shrink: 0;
+          ">  
           </button>
         </div>
   
@@ -1111,6 +1114,36 @@
     document.addEventListener("mouseup", onSwipeEnd);
     document.addEventListener("mouseleave", onSwipeEnd);
   }
+  function handleStartHeart() {
+    let liked = Spicetify.Player.getHeart();
+    const likeButton = document.getElementById("lyrics-like-button");
+    const outlineHeart = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+      <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+    </svg>
+  `;
+    const filledHeart = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+    </svg>
+  `;
+    setIsThisSongLiked(liked);
+    if (liked) {
+      likeButton.innerHTML = filledHeart;
+    } else {
+      likeButton.innerHTML = outlineHeart;
+    }
+  }
+  function trackInplace() {
+    const track = document.getElementById("album-art-track");
+    if (track) {
+      track.style.transition = "none";
+      track.style.transform = "translateX(-33.3333%)";
+      setTimeout(() => {
+        track.style.transition = "transform 0.3s ease-out";
+      }, 50);
+    }
+  }
 
   // src/components/lyricsPage/eventHandlers.ts
   function attachEventHandlers(lyricsContainer) {
@@ -1283,6 +1316,28 @@
       }
     }
     setupAlbumSwiper();
+    handleStartHeart();
+    const likeButton = document.getElementById("lyrics-like-button");
+    const outlineHeart = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+      </svg>
+    `;
+    const filledHeart = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+      </svg>
+    `;
+    likeButton.addEventListener("click", () => {
+      if (isThisSongLiked) {
+        likeButton.innerHTML = outlineHeart;
+        Spicetify.Player.toggleHeart();
+      } else {
+        likeButton.innerHTML = filledHeart;
+        Spicetify.Player.toggleHeart();
+      }
+      setIsThisSongLiked(!isThisSongLiked);
+    });
   }
 
   // src/components/lyricsPage/index.tsx
@@ -1509,14 +1564,8 @@
           updateAlbumImage();
           updateLyricsBackground();
           resetLyricsViewScroll();
-          const track = document.getElementById("album-art-track");
-          if (track) {
-            track.style.transition = "none";
-            track.style.transform = "translateX(-33.3333%)";
-            setTimeout(() => {
-              track.style.transition = "transform 0.3s ease-out";
-            }, 50);
-          }
+          trackInplace();
+          handleStartHeart();
         });
         window.Spicetify.Player.addEventListener("onplaypause", () => {
           handleAlbumRotation();

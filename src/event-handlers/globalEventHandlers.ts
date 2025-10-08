@@ -1,11 +1,11 @@
-import { firstTimeLoadTranslation, lyricsPageActive, setTfirstTimeLoadTranslation, setTranslatedLyrics, translationEnabled } from '../state/lyricsState';
+import { firstTimeLoadTranslation, lyricsPageActive, setIsThisSongLiked, setTfirstTimeLoadTranslation, setTranslatedLyrics, translationEnabled } from '../state/lyricsState';
 import { showLyricsPage, closeLyricsPage } from '../components/lyricsPage/index';
 import { updateLyricsBackground } from '../components/lyricsPage/ui';
 import { highlightInterval, setHighlightInterval, setCurrentHighlightedLine, setMemorizedSelectedText } from '../state/lyricsState';
 import { fetchAndDisplayLyrics, handleTranslations } from '../utils/lyricsFetcher';
 import { createLyricsButton } from '../components/lyricsButton';
 import { updateAlbumImage } from '../utils/albumImageFetcher';
-import { handleAlbumRotation } from '../components/lyricsPage/utils';
+import { handleAlbumRotation, handleStartHeart, trackInplace } from '../components/lyricsPage/utils';
 import { resetLyricsViewScroll } from '../components/lyricsPage/utils';
 declare global {
   interface Window {
@@ -71,16 +71,8 @@ export function setupGlobalEventHandlers() {
         updateLyricsBackground(); // Update background on song change
         resetLyricsViewScroll(); // Reset the page to top
 
-        const track = document.getElementById('album-art-track') as HTMLElement;
-        if (track) {
-            // Instantly reset position without animation
-            track.style.transition = 'none';
-            track.style.transform = 'translateX(-33.3333%)'; 
-            // A tiny timeout can help ensure the style is applied before re-enabling transition later
-            setTimeout(() => {
-                track.style.transition = 'transform 0.3s ease-out';
-            }, 50);
-        }
+        trackInplace();
+        handleStartHeart();
       });
 
       window.Spicetify.Player.addEventListener('onplaypause', () => {
