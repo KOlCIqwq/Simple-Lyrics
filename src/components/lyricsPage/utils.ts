@@ -147,7 +147,15 @@ export function setupAlbumSwiper() {
         } 
         else if (currentTranslate > SWIPE_THRESHOLD && prevAlbumImg.src){
           track.style.transform = `translateX(0%)`;
-          Spicetify.Player.back();
+          if (Spicetify.Player.getProgress() > 3000){
+            // When played over 3 seconds
+            // Back twice, the first resets the track, the second skips
+            Spicetify.Player.back();
+            Spicetify.Player.back();
+          } else{
+            Spicetify.Player.back();
+          }
+          
         }
         else {
             // Snap back to original position

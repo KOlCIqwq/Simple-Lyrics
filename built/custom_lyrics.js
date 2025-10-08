@@ -753,6 +753,15 @@
                             object-fit: cover;
                             border-radius: 50%;
                         "/>
+                        <div class="hover-like" style="
+                        background:rgba(68, 68, 68, 1)
+                        position: absolute;
+                        top: 0; bottom: 0; left: 0; right: 0;
+                        border-radius: 50%;
+                        pointer-events: none;
+                        ">
+                          
+                        </div>
                         <div class="vinyl-overlay" style="
                             position: absolute;
                             top: 0; bottom: 0; left: 0; right: 0;
@@ -1086,7 +1095,12 @@
         Spicetify.Player.next();
       } else if (currentTranslate > SWIPE_THRESHOLD && prevAlbumImg.src) {
         track.style.transform = `translateX(0%)`;
-        Spicetify.Player.back();
+        if (Spicetify.Player.getProgress() > 3e3) {
+          Spicetify.Player.back();
+          Spicetify.Player.back();
+        } else {
+          Spicetify.Player.back();
+        }
       } else {
         track.style.transform = `translateX(${CENTER_OFFSET_PERCENT}%)`;
       }
