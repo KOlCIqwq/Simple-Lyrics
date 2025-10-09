@@ -14,7 +14,7 @@ import { fetchAndDisplayLyrics } from '../../utils/lyricsFetcher';
 import { updateAlbumImage } from '../../utils/albumImageFetcher';
 import { createLyricsPageUI } from '../lyricsPage/ui';
 import { attachEventHandlers } from '../lyricsPage/eventHandlers';
-import { updateRotationKeyframes } from './utils';
+import { handleStartHeart, setupAlbumSwiper, updateRotationKeyframes } from './utils';
 
 // Create lyrics page with proper cleanup
 export function showLyricsPage() {
@@ -76,6 +76,9 @@ export function showLyricsPage() {
     // We still inject the animation but set it not playing
     albumImg.classList.remove("rotating");
   }
+
+  setupAlbumSwiper();
+  handleStartHeart();
 }
 
 // Properly close the lyrics page
@@ -114,4 +117,12 @@ export function closeLyricsPage() {
   
   setLyricsPageActive(false);
   setOriginalPageState(null);
+}
+
+export function toggleLyricsPage(){
+  if (lyricsPageActive){
+    closeLyricsPage();
+  } else{
+    showLyricsPage();
+  }
 }

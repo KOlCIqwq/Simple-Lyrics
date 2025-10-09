@@ -14,24 +14,16 @@ import {
     rotationDeg,
     setRotationDegree,
     currentLyrics,
-    translationEnabled,
     setTranslationEnabled,
-    translatedLyrics,
-    setTranslatedLyrics,
-    isCodeScrolling,
-    setIsCodeScrolling,
-    currentHighlightedLine,
     ignoreProgrammaticScroll,
     lastProgrammaticScrollAt,
     PROGRAMMATIC_SCROLL_GRACE_MS,
-    lastUserScrollAt,
     USER_SCROLL_PAUSE_MS,
     setLastUserScrollAt,
     isThisSongLiked,
     setIsThisSongLiked,
 } from '../../state/lyricsState';
 import { fetchAndDisplayLyrics, handleTranslations, resetToCurrentHighlightedLine } from '../../utils/lyricsFetcher';
-import { processFullLyrics } from '../../utils/translate';
 import { closeLyricsPage, showLyricsPage } from './index';
 import { handleStartHeart, pauseRotation, resumeRotation, setupAlbumSwiper } from './utils';
 
@@ -249,9 +241,6 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
         }
       }
     }
-  
-    setupAlbumSwiper();
-    handleStartHeart();
 
     const likeButton = document.getElementById("lyrics-like-button") as HTMLButtonElement;
     // https://icons.getbootstrap.com/icons/heart/
