@@ -92,10 +92,6 @@ export function resetLyricsViewScroll() {
     }
 }
 
-export function test(message:string){
-    Spicetify.showNotification(message);
-}
-
 export function setupAlbumSwiper() {
     const swiperContainer = document.getElementById('album-art-swiper-container');
     const track = document.getElementById('album-art-track') as HTMLElement;

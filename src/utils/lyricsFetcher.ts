@@ -1,3 +1,4 @@
+import { resumeRotation } from '../components/lyricsPage/utils';
 import {
   currentLyrics,
   highlightInterval,
@@ -22,6 +23,8 @@ import {
   lastUserScrollAt,
   USER_SCROLL_PAUSE_MS,
   markProgrammaticScroll,
+  rotationDeg,
+  isAlbumRotating,
 } from '../state/lyricsState';
 import { getNELyrics, searchId } from './netEasyFetcher';
 import { processFullLyrics } from './translate';
@@ -295,7 +298,9 @@ export function displaySyncedLyrics(data: Song, trackUri: string) {
     }) */
     setIsPlainText(false);
     setCurrentLyrics(parsedLyrics);
-    processFullLyrics(currentLyrics,trackUri); 
+    processFullLyrics(currentLyrics,trackUri);
+    // After translation process we should reset the view
+    resetToCurrentHighlightedLine();
     setTfirstTimeLoadTranslation(false);
   }
 
@@ -306,7 +311,8 @@ export function displaySyncedLyrics(data: Song, trackUri: string) {
       .filter(Boolean)
       .forEach((line: string) => currentLyrics.push({ time: 99999999, line }));
     setIsPlainText(true);
-    processFullLyrics(currentLyrics,trackUri); 
+    processFullLyrics(currentLyrics,trackUri);
+    resetToCurrentHighlightedLine();
     setTfirstTimeLoadTranslation(false);
   }
 
@@ -441,10 +447,13 @@ export function displaySyncedLyrics(data: Song, trackUri: string) {
           if (!userPaused) {
             // mark that this is a programmatic scroll so the onscroll handler ignores it
             markProgrammaticScroll();
-            setIsCodeScrolling(2);
             newActiveEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          } else {
-            // skip recenter because user recently scrolled
+            // Activate again the album spin, since we're certain that music is playing (some sort of fix to album stops scrolling)
+            const albumImg = document.getElementById("lyrics-album-image");
+            if (!albumImg) return;
+            if (!isAlbumRotating){
+              resumeRotation(albumImg, rotationDeg); 
+            }
           }
         }
         setCurrentHighlightedLine(newActiveLineId);
@@ -462,7 +471,6 @@ export function resetToCurrentHighlightedLine(){
     const currentActiveEl = document.getElementById(currentHighlightedLine);
     if (currentActiveEl) {
       markProgrammaticScroll();
-      setIsCodeScrolling(2);
       currentActiveEl.scrollIntoView({ behavior:'smooth', block: 'center'});
     }
   }
