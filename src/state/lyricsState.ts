@@ -35,6 +35,12 @@ export let lastUserScrollAt = 0;
 export let lastProgrammaticScrollAt = 0;
 export let ignoreProgrammaticScroll = false;
 
+export let continousCheckPlaying = false;
+
+export function setContinousCheckPlaying(status:boolean){
+  continousCheckPlaying = status;
+}
+
 export function setIsThisSongLiked(status:boolean){
   isThisSongLiked = status;
 }

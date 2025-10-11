@@ -9,6 +9,7 @@ import {
   setMemorizedSelectedText,
   rotationDeg,
   setRotationDegree,
+  setContinousCheckPlaying,
 } from '../../state/lyricsState';
 import { fetchAndDisplayLyrics } from '../../utils/lyricsFetcher';
 import { updateAlbumImage } from '../../utils/albumImageFetcher';
@@ -79,6 +80,8 @@ export function showLyricsPage() {
 
   setupAlbumSwiper();
   handleStartHeart();
+
+  setContinousCheckPlaying(true);
 }
 
 // Properly close the lyrics page
@@ -117,6 +120,8 @@ export function closeLyricsPage() {
   
   setLyricsPageActive(false);
   setOriginalPageState(null);
+
+  setContinousCheckPlaying(false);
 }
 
 export function toggleLyricsPage(){

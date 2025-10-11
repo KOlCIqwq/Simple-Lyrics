@@ -22,6 +22,7 @@ import {
     setLastUserScrollAt,
     isThisSongLiked,
     setIsThisSongLiked,
+    continousCheckPlaying,
 } from '../../state/lyricsState';
 import { fetchAndDisplayLyrics, handleTranslations, resetToCurrentHighlightedLine } from '../../utils/lyricsFetcher';
 import { closeLyricsPage, showLyricsPage } from './index';
@@ -262,4 +263,21 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
 
     likeButton.addEventListener('mouseenter', () => (likeButton.style.backgroundColor = 'rgba(255,255,255,0.1)'));
     likeButton.addEventListener('mouseleave', () => (likeButton.style.backgroundColor = 'transparent'));
+
+    // Add a 5 seconds for checking the song status
+    if(continousCheckPlaying){
+      setInterval(() => {
+        let isPlaying = checkSongStatus();
+        const albumImg = document.getElementById("lyrics-album-image");
+        if (isPlaying == true){
+          resumeRotation(albumImg,rotationDeg);
+        } else{
+          pauseRotation(albumImg);
+        }
+      }, 5000);
+    }
+}
+
+function checkSongStatus() {
+  return Spicetify.Player.isPlaying()
 }
