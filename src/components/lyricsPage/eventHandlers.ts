@@ -113,14 +113,6 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
       }
     });
   
-    // Add back button functionality
-    const backButton = document.getElementById('lyrics-back-button');
-    if (backButton) {
-      backButton.addEventListener('click', closeLyricsPage);
-      backButton.addEventListener('mouseenter', () => (backButton.style.backgroundColor = 'rgba(255,255,255,0.1)'));
-      backButton.addEventListener('mouseleave', () => (backButton.style.backgroundColor = 'transparent'));
-    }
-  
     // Add copy button functionality
     const copyButton = document.getElementById('lyrics-copy-button');
     if (copyButton) {
@@ -267,4 +259,7 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
       }
       setIsThisSongLiked(!isThisSongLiked)
     });
+
+    likeButton.addEventListener('mouseenter', () => (likeButton.style.backgroundColor = 'rgba(255,255,255,0.1)'));
+    likeButton.addEventListener('mouseleave', () => (likeButton.style.backgroundColor = 'transparent'));
 }
