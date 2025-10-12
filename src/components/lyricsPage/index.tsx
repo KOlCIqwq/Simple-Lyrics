@@ -14,7 +14,7 @@ import {
 import { fetchAndDisplayLyrics } from '../../utils/lyricsFetcher';
 import { updateAlbumImage } from '../../utils/albumImageFetcher';
 import { createLyricsPageUI } from '../lyricsPage/ui';
-import { attachEventHandlers } from '../lyricsPage/eventHandlers';
+import { attachEventHandlers, continousCheckPlayingStatus } from '../lyricsPage/eventHandlers';
 import { handleStartHeart, setupAlbumSwiper, updateRotationKeyframes } from './utils';
 
 // Create lyrics page with proper cleanup
@@ -23,7 +23,6 @@ export function showLyricsPage() {
   if (lyricsPageActive) {
     return;
   }
-
   const mainView =
     document.querySelector('.main-view-container__scroll-node-child') ||
     document.querySelector('.Root__main-view > div') ||
@@ -80,8 +79,7 @@ export function showLyricsPage() {
 
   setupAlbumSwiper();
   handleStartHeart();
-
-  setContinousCheckPlaying(true);
+  continousCheckPlayingStatus();
 }
 
 // Properly close the lyrics page
@@ -120,8 +118,6 @@ export function closeLyricsPage() {
   
   setLyricsPageActive(false);
   setOriginalPageState(null);
-
-  setContinousCheckPlaying(false);
 }
 
 export function toggleLyricsPage(){

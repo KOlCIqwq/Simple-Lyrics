@@ -23,6 +23,8 @@ import {
     isThisSongLiked,
     setIsThisSongLiked,
     continousCheckPlaying,
+    lyricsPageActive,
+    isAlbumRotating,
 } from '../../state/lyricsState';
 import { fetchAndDisplayLyrics, handleTranslations, resetToCurrentHighlightedLine } from '../../utils/lyricsFetcher';
 import { closeLyricsPage, showLyricsPage } from './index';
@@ -263,18 +265,37 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
 
     likeButton.addEventListener('mouseenter', () => (likeButton.style.backgroundColor = 'rgba(255,255,255,0.1)'));
     likeButton.addEventListener('mouseleave', () => (likeButton.style.backgroundColor = 'transparent'));
+}
 
-    // Add a 5 seconds for checking the song status
-    if(continousCheckPlaying){
-      setInterval(() => {
+let intervalId: ReturnType<typeof setInterval> | undefined;
+
+export function continousCheckPlayingStatus(){
+  // Add a 5 seconds for checking the song status
+    if(lyricsPageActive){
+      clearInterval(intervalId);
+      intervalId = setInterval(() => {
         let isPlaying = checkSongStatus();
         const albumImg = document.getElementById("lyrics-album-image");
-        if (isPlaying == true){
+        if (isPlaying == true && isAlbumRotating != true){
+          const saveAngle = pauseRotation(albumImg);
+          setRotationDegree(saveAngle + 1); // +1 to compensate the lag
           resumeRotation(albumImg,rotationDeg);
-        } else{
-          pauseRotation(albumImg);
+        } else if (isPlaying == false){
+          const saveAngle = pauseRotation(albumImg);
+          setRotationDegree(saveAngle);
         }
-      }, 5000);
+        if (typeof lyricsPageActive){
+          //Spicetify.showNotification((typeof lyricsPageActive));
+        }else{
+          //Spicetify.showNotification();
+        }
+        if (typeof lyricsPageActive === "undefined" || !lyricsPageActive) {
+          clearInterval(intervalId);
+        }
+      }, 10000);
+    }
+    else {
+      clearInterval(intervalId);
     }
 }
 

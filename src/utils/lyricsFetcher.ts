@@ -242,6 +242,7 @@ export function handleTranslations(){
 export function insertTranslations(translatedLyrics: { time:number, line: string }[]) {
   for (let i = 0; i < translatedLyrics.length; i++) {
     const el = document.getElementById(`translated-line-${i}`);
+
     if (el) {
       el.textContent = translatedLyrics[i].line;
     }
