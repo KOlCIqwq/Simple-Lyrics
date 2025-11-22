@@ -34,8 +34,13 @@ export const PROGRAMMATIC_SCROLL_GRACE_MS = 500;
 export let lastUserScrollAt = 0;
 export let lastProgrammaticScrollAt = 0;
 export let ignoreProgrammaticScroll = false;
-
 export let continousCheckPlaying = false;
+
+export let albumRotationToggled = true;
+
+export function setAlbumRotationToggled(status:boolean){
+  albumRotationToggled = status;
+}
 
 export function setContinousCheckPlaying(status:boolean){
   continousCheckPlaying = status;

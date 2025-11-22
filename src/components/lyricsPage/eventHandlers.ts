@@ -25,6 +25,9 @@ import {
     continousCheckPlaying,
     lyricsPageActive,
     isAlbumRotating,
+    setAlbumRotating,
+    albumRotationToggled,
+    setAlbumRotationToggled,
 } from '../../state/lyricsState';
 import { fetchAndDisplayLyrics, handleTranslations, resetToCurrentHighlightedLine } from '../../utils/lyricsFetcher';
 import { closeLyricsPage, showLyricsPage } from './index';
@@ -202,9 +205,11 @@ export function attachEventHandlers(lyricsContainer: HTMLElement) {
             if (!albumImg) return;
           
             if (rotationToggle.checked) {
+              setAlbumRotationToggled(true);
               // If it's checked, resume rotation
               resumeRotation(albumImg, rotationDeg); 
             } else {
+              setAlbumRotationToggled(false);
               // If it's unchecked, pause rotation
               const savedAngle = pauseRotation(albumImg);
               setRotationDegree(savedAngle);
@@ -276,7 +281,7 @@ export function continousCheckPlayingStatus(){
       intervalId = setInterval(() => {
         let isPlaying = checkSongStatus();
         const albumImg = document.getElementById("lyrics-album-image");
-        if (isPlaying == true){
+        if (isPlaying == true && albumRotationToggled){
           const saveAngle = pauseRotation(albumImg);
           setRotationDegree(saveAngle + 1); // +1 to compensate the lag
           resumeRotation(albumImg,rotationDeg);
