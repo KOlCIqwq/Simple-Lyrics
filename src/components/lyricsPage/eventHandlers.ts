@@ -276,7 +276,7 @@ export function continousCheckPlayingStatus(){
       intervalId = setInterval(() => {
         let isPlaying = checkSongStatus();
         const albumImg = document.getElementById("lyrics-album-image");
-        if (isPlaying == true && isAlbumRotating != true){
+        if (isPlaying == true){
           const saveAngle = pauseRotation(albumImg);
           setRotationDegree(saveAngle + 1); // +1 to compensate the lag
           resumeRotation(albumImg,rotationDeg);
